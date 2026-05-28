@@ -92,20 +92,34 @@ export const getProjectTasks = async (
   req: Request,
   res: Response
 ) => {
+
   try {
-    const projectId = req.params.projectId as string
 
-    const project = await prisma.project.findUnique({
-      where: {
-        id: projectId,
-      },
+    const projectId =
+      req.params.projectId as string
 
-      include: {
-        tasks: true,
-      },
-    })
+    const project =
+      await prisma.project.findUnique({
+
+        where: {
+          id: projectId,
+        },
+
+        include: {
+          tasks: {
+            include: {
+              assignedTo: true,
+            },
+
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
+        },
+      })
 
     if (!project) {
+
       return res.status(404).json({
         message: "Project not found",
       })
@@ -114,6 +128,7 @@ export const getProjectTasks = async (
     res.status(200).json(project)
 
   } catch (error) {
+
     console.log(error)
 
     res.status(500).json({
