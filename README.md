@@ -97,19 +97,19 @@ The goal was not just to build another CRUD app, but to create something that ac
 
 ## Dashboard
 
-![Dashboard](./client/devflow-client/public/screenshots/dashboard.png)
+![Dashboard](./client/devflow-client/public/Screenshots/Dashboard.png)
 
 ## Tasks Page
 
-![Tasks](./client/devflow-client/public/screenshots/Tasks_Page.png)
+![Tasks](./client/devflow-client/public/Screenshots/Tasks_Page.png)
 
 ## Team Collaboration
 
-![Team](./client/devflow-client/public/screenshots/Team_Collaboration.png)
+![Team](./client/devflow-client/public/Screenshots/Team_Collaboration.png)
 
 ## Project Details / Kanban Board
 
-![Project Details](./client/devflow-client/public/screenshots/Kanban_Board.png)
+![Project Details](./client/devflow-client/public/Screenshots/Kanban_Board.png)
 
 ---
 
