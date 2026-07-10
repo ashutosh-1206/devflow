@@ -226,6 +226,7 @@ const Team = () => {
                   name={member.user.name}
                   email={member.user.email}
                   role={member.role}
+                  canRemove={false}
                   handleRemoveMember={() => {}}
                 />
 
