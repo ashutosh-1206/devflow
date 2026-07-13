@@ -54,6 +54,9 @@ const ProjectDetails = () => {
   const [currentUserRole, setCurrentUserRole] =
     useState("")
 
+  const [currentUserId, setCurrentUserId] =
+    useState("")
+
   const [title, setTitle] =
     useState("")
 
@@ -127,6 +130,8 @@ const ProjectDetails = () => {
 
         const currentUser =
           JSON.parse(userData)
+
+        setCurrentUserId(currentUser.id)
 
         const currentMember =
           projectMembers.find(
@@ -647,6 +652,8 @@ const ProjectDetails = () => {
       </div>
 
       {/* Create Task Form */}
+      {currentUserRole === "ADMIN" && (
+
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-10 max-w-5xl space-y-3">
 
         <h2 className="text-2xl font-bold mb-6">
@@ -766,6 +773,7 @@ const ProjectDetails = () => {
         </div>
 
       </div>
+      )}
 
       {/* Invite Members */}
       {currentUserRole === "ADMIN" && (
@@ -986,6 +994,8 @@ const ProjectDetails = () => {
                 title="TODO"
                 status="TODO"
                 tasks={todoTasks}
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
                 editingTaskId={
                   editingTaskId
                 }
@@ -1019,6 +1029,8 @@ const ProjectDetails = () => {
                 tasks={
                   inProgressTasks
                 }
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
                 editingTaskId={
                   editingTaskId
                 }
@@ -1050,6 +1062,8 @@ const ProjectDetails = () => {
                 title="DONE"
                 status="DONE"
                 tasks={doneTasks}
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
                 editingTaskId={
                   editingTaskId
                 }

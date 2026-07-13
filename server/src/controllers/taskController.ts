@@ -4,6 +4,10 @@ import { AuthRequest }
   from "../middlewares/authMiddleware"
 import logActivity
   from "../utils/logActivity"
+import { getTaskPermission }
+  from "../utils/taskPermissions"  
+
+
 
 export const createTask = async (
   req: AuthRequest,
@@ -29,6 +33,29 @@ export const createTask = async (
       assignedToId,
       dueDate,
     } = req.body
+
+    const projectMember =
+      await prisma.projectMember.findFirst({
+        where: {
+          projectId,
+          userId: user.id,
+        },
+      })
+
+    if (!projectMember) {
+
+      return res.status(403).json({
+        message: "You are not a member of this project.",
+      })
+    }
+
+    if (projectMember.role !== "ADMIN") {
+
+      return res.status(403).json({
+        message:
+          "Only project admins can create tasks.",
+      })
+    }
 
     const task =
       await prisma.task.create({
@@ -76,7 +103,7 @@ export const createTask = async (
       }
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Task created successfully",
       task,
     })
@@ -112,17 +139,27 @@ export const updateTaskStatus = async (
 
     const { status } = req.body
 
-    const existingTask =
-      await prisma.task.findUnique({
-        where: {
-          id: taskId,
-        },
-      })
+    const permission =
+      await getTaskPermission(
+        taskId,
+        user.id
+      )
 
-    if (!existingTask) {
+    if (!permission.task) {
 
       return res.status(404).json({
         message: "Task not found",
+      })
+    }
+
+    if (
+      !permission.isAdmin &&
+      !permission.isAssigned
+    ) {
+
+      return res.status(403).json({
+        message:
+          "You are not authorized to update this task.",
       })
     }
 
@@ -142,12 +179,12 @@ export const updateTaskStatus = async (
       })
 
     await logActivity(
-      existingTask.projectId,
+      permission.task.projectId,
       user.id,
-      `${user.name} moved task "${existingTask.title}" to ${status}`
+      `${user.name} moved task "${permission.task.title}" to ${status}`
     )
 
-    res.status(200).json({
+    return res.status(200).json({
       message:
         "Task updated successfully",
       task: updatedTask,
@@ -189,20 +226,27 @@ export const updateTask = async (
       dueDate,
     } = req.body
 
-    const existingTask =
-      await prisma.task.findUnique({
-        where: {
-          id: taskId,
-        },
-        include: {
-          assignedTo: true,
-        },
-      })
+    const permission =
+      await getTaskPermission(
+        taskId,
+        user.id
+      )
 
-    if (!existingTask) {
+    if (!permission.task) {
 
       return res.status(404).json({
         message: "Task not found",
+      })
+    }
+
+    if (
+      !permission.isAdmin &&
+      !permission.isAssigned
+    ) {
+
+      return res.status(403).json({
+        message:
+          "You are not authorized to update this task.",
       })
     }
 
@@ -218,12 +262,12 @@ export const updateTask = async (
 
           assignedToId:
             assignedToId === undefined
-              ? existingTask.assignedToId
+              ? permission.task.assignedToId
               : assignedToId || null,
 
           dueDate:
             dueDate === undefined
-              ? existingTask.dueDate
+              ? permission.task.dueDate
               : dueDate
               ? new Date(dueDate)
               : null,
@@ -235,14 +279,14 @@ export const updateTask = async (
       })
 
     await logActivity(
-      existingTask.projectId,
+      permission.task.projectId,
       user.id,
       `${user.name} updated task "${updatedTask.title}"`
     )
 
     if (
       assignedToId !== undefined &&
-      assignedToId !== existingTask.assignedToId
+      assignedToId !== permission.task.assignedToId
     ) {
 
       if (assignedToId) {
@@ -257,7 +301,7 @@ export const updateTask = async (
         if (assignedUser) {
 
           await logActivity(
-            existingTask.projectId,
+            permission.task.projectId,
             user.id,
             `${user.name} reassigned task "${updatedTask.title}" to ${assignedUser.name}`
           )
@@ -266,14 +310,14 @@ export const updateTask = async (
       } else {
 
         await logActivity(
-          existingTask.projectId,
+          permission.task.projectId,
           user.id,
           `${user.name} removed assignee from task "${updatedTask.title}"`
         )
       }
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Task updated successfully",
       task: updatedTask,
     })
@@ -305,7 +349,7 @@ export const getAllTasks = async (
         },
       })
 
-    res.status(200).json({
+    return res.status(200).json({
       tasks,
     })
 
@@ -338,17 +382,24 @@ export const deleteTask = async (
     const taskId =
       req.params.taskId as string
 
-    const existingTask =
-      await prisma.task.findUnique({
-        where: {
-          id: taskId,
-        },
-      })
+    const permission =
+      await getTaskPermission(
+        taskId,
+        user.id
+      )
 
-    if (!existingTask) {
+    if (!permission.task) {
 
       return res.status(404).json({
         message: "Task not found",
+      })
+    }
+
+    if (!permission.isAdmin) {
+
+      return res.status(403).json({
+        message:
+          "Only project admins can delete tasks.",
       })
     }
 
@@ -359,12 +410,12 @@ export const deleteTask = async (
     })
 
     await logActivity(
-      existingTask.projectId,
+      permission.task.projectId,
       user.id,
-      `${user.name} deleted task "${existingTask.title}"`
+      `${user.name} deleted task "${permission.task.title}"`
     )
 
-    res.status(200).json({
+    return res.status(200).json({
       message:
         "Task deleted successfully",
     })

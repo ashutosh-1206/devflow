@@ -37,6 +37,9 @@ interface TaskColumnProps {
     taskId: string
   ) => void
 
+  currentUserId: string
+  currentUserRole: string
+
   handleUpdateStatus: (
     taskId: string,
     status: string
@@ -52,6 +55,9 @@ const TaskColumn = ({
 
   editTitle,
   editDescription,
+
+  currentUserId,
+  currentUserRole,
 
   setEditingTaskId,
   setEditTitle,
@@ -104,14 +110,31 @@ const TaskColumn = ({
 
             )}
 
-            {tasks.map((task, index) => (
+            {tasks.map((task, index) => {
+
+            const isAssigned =
+              task.assignedTo?.id === currentUserId
+
+            const canEdit =
+              currentUserRole === "ADMIN" ||
+              isAssigned
+
+            const canDelete =
+              currentUserRole === "ADMIN"
+
+            const canDrag =
+              currentUserRole === "ADMIN" ||
+              isAssigned
+
+            return (
 
               <Draggable
                 key={task.id}
                 draggableId={task.id}
                 index={index}
                 isDragDisabled={
-                  editingTaskId === task.id
+                  editingTaskId === task.id ||
+                  !canDrag
                 }
               >
 
@@ -147,6 +170,11 @@ const TaskColumn = ({
                       handleDeleteTask={
                         handleDeleteTask
                       }
+
+                      canEdit={canEdit}
+                      canDelete={canDelete}
+                      canDrag={canDrag}
+
                       handleUpdateStatus={
                         handleUpdateStatus
                       }
@@ -158,7 +186,9 @@ const TaskColumn = ({
 
               </Draggable>
 
-            ))}
+              )
+
+            })}
 
             {provided.placeholder}
 

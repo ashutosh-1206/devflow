@@ -20,6 +20,11 @@ interface TaskCardProps {
   handleDeleteTask: (
     taskId: string
   ) => void
+
+  canEdit: boolean
+  canDelete: boolean
+  canDrag: boolean
+
   handleUpdateStatus: (
     taskId: string,
     status: string
@@ -36,8 +41,13 @@ const TaskCard = ({
   setEditDescription,
   handleEditTask,
   handleDeleteTask,
+
+  canEdit,
+  canDelete,
+  canDrag,
+
   handleUpdateStatus,
-}: TaskCardProps) => {
+  }: TaskCardProps) => {
 
   const today =
     new Date()
@@ -228,6 +238,8 @@ const TaskCard = ({
 
           <div className="flex flex-wrap gap-2 mt-6">
 
+            {canEdit && (
+
             <button
               onClick={() => {
 
@@ -244,6 +256,10 @@ const TaskCard = ({
               EDIT
             </button>
 
+            )}
+
+            {canDelete && (
+
             <button
               onClick={() =>
                 handleDeleteTask(task.id)
@@ -253,41 +269,61 @@ const TaskCard = ({
               DELETE
             </button>
 
-            <button
-              onClick={() =>
-                handleUpdateStatus(
-                  task.id,
-                  "TODO"
-                )
-              }
-              className="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold"
-            >
-              TODO
-            </button>
+            )}
 
-            <button
-              onClick={() =>
-                handleUpdateStatus(
-                  task.id,
-                  "IN_PROGRESS"
-                )
-              }
-              className="bg-yellow-600 hover:bg-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
-            >
-              IN PROGRESS
-            </button>
+            {canDrag && (
 
-            <button
-              onClick={() =>
-                handleUpdateStatus(
-                  task.id,
-                  "DONE"
-                )
-              }
-              className="bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
-            >
-              DONE
-            </button>
+              <>
+                {task.status !== "TODO" && (
+
+                  <button
+                    onClick={() =>
+                      handleUpdateStatus(
+                        task.id,
+                        "TODO"
+                      )
+                    }
+                    className="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  >
+                    TODO
+                  </button>
+
+                  )}
+
+                {task.status !== "IN_PROGRESS" && (
+
+                  <button
+                    onClick={() =>
+                      handleUpdateStatus(
+                        task.id,
+                        "IN_PROGRESS"
+                      )
+                    }
+                    className="bg-yellow-600 hover:bg-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  >
+                    IN PROGRESS
+                  </button>
+
+                  )}
+
+                {task.status !== "DONE" && (
+
+                  <button
+                    onClick={() =>
+                      handleUpdateStatus(
+                        task.id,
+                        "DONE"
+                      )
+                    }
+                    className="bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  >
+                    DONE
+                  </button>
+
+                  )}
+              </>
+
+            )}
 
           </div>
 
