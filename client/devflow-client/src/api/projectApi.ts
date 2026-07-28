@@ -109,3 +109,12 @@ export const getProjectActivity = async (
 
   return response.data
 }
+
+export const getMyTasks = async () => {
+
+  const response = await API.get(
+    "/tasks/my"
+  )
+
+  return response.data
+}

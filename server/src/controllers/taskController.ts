@@ -194,7 +194,7 @@ export const updateTaskStatus = async (
 
     console.log(error)
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server error",
     })
   }
@@ -326,7 +326,7 @@ export const updateTask = async (
 
     console.log(error)
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server error",
     })
   }
@@ -357,7 +357,70 @@ export const getAllTasks = async (
 
     console.log(error)
 
-    res.status(500).json({
+    return res.status(500).json({
+      message: "Server error",
+    })
+  }
+}
+
+export const getMyTasks = async (
+  req: AuthRequest,
+  res: Response
+) => {
+
+  try {
+
+    const user = req.user
+
+    if (!user) {
+
+      return res.status(401).json({
+        message: "Unauthorized",
+      })
+    }
+
+    const tasks =
+      await prisma.task.findMany({
+        where: {
+          assignedToId: user.id,
+        },
+
+        include: {
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+
+        project: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+
+        orderBy: [
+          {
+            dueDate: "asc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
+      })
+
+    return res.status(200).json({
+      tasks,
+    })
+
+  } catch (error) {
+
+    console.log(error)
+
+    return res.status(500).json({
       message: "Server error",
     })
   }
@@ -424,7 +487,7 @@ export const deleteTask = async (
 
     console.log(error)
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server error",
     })
   }

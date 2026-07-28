@@ -53,7 +53,7 @@ const DashboardLayout = ({
 
         </div>
 
-        <nav className="grid grid-cols-4 gap-2 mt-4 text-sm">
+        <nav className="grid grid-cols-5 gap-2 mt-4 text-sm">
 
           <NavLink
             to="/dashboard"
@@ -74,6 +74,13 @@ const DashboardLayout = ({
             className={navLinkClass}
           >
             Tasks
+          </NavLink>
+
+          <NavLink
+            to="/my-tasks"
+            className={navLinkClass}
+          >
+            My Tasks
           </NavLink>
 
           <NavLink
@@ -119,6 +126,13 @@ const DashboardLayout = ({
                 className={navLinkClass}
               >
                 Tasks
+              </NavLink>
+
+              <NavLink
+                to="/my-tasks"
+                className={navLinkClass}
+              >
+                My Tasks
               </NavLink>
 
               <NavLink

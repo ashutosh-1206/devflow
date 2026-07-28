@@ -7,6 +7,7 @@ import Tasks from "../pages/Tasks"
 import Team from "../pages/Team"
 import ProtectedRoute from "../components/ProtectedRoute"
 import ProjectDetails from "../pages/ProjectDetails"
+import MyTasks from "../pages/MyTasks"
 
 
 const AppRoutes = () => {
@@ -40,6 +41,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Tasks />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-tasks"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
             </ProtectedRoute>
           }
         />
